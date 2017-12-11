@@ -1,0 +1,33 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 10, 2017, 10:02:51 AM
+    Author     : abhijet
+*/
+
+.centerXY{
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+.content{
+   width: 40%;
+   height:80%;
+   background: #DEDEDE;
+}
+.selector{
+   position: absolute;
+   margin: 20px 0px 20px 0px;
+   left: 50%;
+   transform: translate(-50%, 0);
+}
+.anim-section{
+   margin-top:100px;
+}
+#anim-object{
+   width:20%;
+}
