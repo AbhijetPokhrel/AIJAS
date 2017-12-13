@@ -5,30 +5,61 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-  <head>
-    <title>Animation in JAVASCRIPT Android Style</title>
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-      <div class="centerXY content">
-      
-	      <select class="selector">
-		      
-		      		<option value="0">--Select Animation--</option>
-		      		<option value="1">Translate</option>
-		      		<option value="1">Rotate</option>
-		      		<option value="1">Fade</option>
-		      		<option value="1">Scale</option>
-		      		<option value="1">Combin Anims</option>
-		      		
-	      </select>
-	      
-	      <div class="anim-section">
-	      	<img src="images/ultraball.png" id="anim-object"/>
-	      </div>
-	      
-      </div>
-  </body>
+    <head>
+        <title>Animation in JAVASCRIPT Android Style</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="centerXY content">
+
+            <select class="selector" onchange="loadAnim(this)">
+
+                <option value="0">--Select Animation--</option>
+                <option value="1">Translate_X</option>
+                 <option value="2">Translate_Y</option>
+                <option value="3">Rotate</option>
+                <option value="4">Fade</option>
+                <option value="5">Scale</option>
+                <option value="6">Combin Anims</option>
+
+            </select>
+
+            <div class="anim-section">
+                <div class="img-holder">
+                     <img src="images/ultraball.png" id="anim-object" data-style-id="ball11"/>
+                </div>
+                
+            </div>
+
+        </div>
+        <script src="js/AIJAS.js" ></script>
+        <script type="text/javascript">
+            window.onload = function () {
+                
+            }
+            
+            function loadAnim(elem){
+                console.log("load "+elem.value);
+                if(elem.value==View.TRANSLATE_X){
+                    
+                     var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.TRANSLATE_X, 100, 400);
+                    anim.setDuration(1000);
+                    anim.setInterpolar(new BounceInterpolator());
+                    anim.start(); 
+                    
+                }else if(elem.value==View.TRANSLATE_Y){
+                    
+                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.TRANSLATE_Y, 100, 400);
+                    anim.setDuration(1000);
+                    anim.setInterpolar(new BounceInterpolator());
+                    anim.start();    
+                }
+                
+            }
+        </script>
+    </body>
 </html>

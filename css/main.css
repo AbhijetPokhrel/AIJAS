@@ -9,28 +9,31 @@ and open the template in the editor.
 */
 
 .centerXY{
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 .content{
-   width: 40%;
-   height:80%;
-   background: #DEDEDE;
+    width: 40%;
+    height:80%;
+    background: #DEDEDE;
 }
 .selector{
-   position: absolute;
-   margin: 20px 0px 20px 0px;
-   left: 50%;
-   transform: translate(-50%, 0);
+    position: absolute;
+    margin: 20px 0px 20px 0px;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 .anim-section{
-   margin-top:100px;
+    margin-top:100px;
 }
-#anim-object{
-   width:20%;
-   position: absolute;
-   left: 50%;
-   transform: translate(-50%, 0);
+.img-holder{
+    width:20%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+.img-holder img{
+    width:70%;
 }
