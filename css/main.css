@@ -35,5 +35,5 @@ and open the template in the editor.
     transform: translate(-50%, 0);
 }
 .img-holder img{
-    width:70%;
+    width:100%;
 }

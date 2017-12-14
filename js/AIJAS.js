@@ -1,7 +1,7 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+
+
+/*
+ * _______________________________VIEW SECION___________________________________
  */
 
 class View{
@@ -11,12 +11,27 @@ View.TRANSLATE_X = 1;
 View.TRANSLATE_Y = 2;
 View.ROTATE = 3;
 View.ALPHA = 4;
+View.SCALE=5;
 
+//********************END VIEW SECTION*******************************************
+
+/*
+ * STRUCTURE of tracking the elems animations
+ * {"elem_id":{MAPS of translates}}
+ * 
+ * STRUCTURE of tracking the maps of translation
+ * {"percentage":{
+ *                  translate:{x:val,y:val},
+ *                  rotate:val deg,
+ *                  opacity:val from 0 to 1
+ *               }}
+ */
 
 class ValueAnimator{
     
     
     constructor(){
+        this.animators=[];
         this.IS_ANIM_SET=false;
         this.interpolar=new LinearInterpolar();
     }
@@ -31,89 +46,242 @@ class ValueAnimator{
     }
     
     start(){
-        
-        if(!this.IS_ANIM_SET){
-            
-            this.animators.forEach(function(item){
-                var name=item.elem.generateKeyFrames(item.elem); 
-                item.elem.initialize(item.elem,name);
-            });  
-           
-           
+
+        this.generateKeyFramesForMultipleAnims();
+        this.generateKeyFrames();
+        for(var anim_id in this.animations){
+            this.initialize(this.animations[anim_id]['elem'],
+                            this.animations[anim_id]['anim_name'],
+                            this.animations[anim_id]['final_attr']
+                           );
         }
         
     }
     
-    generateKeyFrames(elem){
-        var t0=0;
-        var dist=this.to-this.from;
-        var anim_name="AJAIS"+elem.elem.dataset.styleId;
-       
-        var anims='';
-        
-        var final_attr='';
-        
-        while(t0<=1){
-//            this.log("t0",t0);
-            if(elem.prop==View.TRANSLATE_X){
-                final_attr="translate(" +
-                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px,0px)"+
-                        " rotateZ(0.001deg);";
+    /*
+     * This function will generate appropriate keyfram css animation and 
+     * adds them to the DOM
+     * This is only used after all the elemensts coorsds ar tracked as frames
+     */
+    generateKeyFrames(){
+        var prop;
+        for(var anim_id in this.animations){
+            
+            var anim_name="AJAIS"+anim_id;
+            var anims='';
+            var final_attr='';
+            
+            for(var frame_per in this.animations[anim_id]["anim"]){
+                this.log("frame",frame_per);
+                prop=this.animations[anim_id]["anim"][frame_per];
+                // Adding translatoin
+                final_attr='transform : translate(';
+                final_attr+=prop.translate.x+"px";
+                final_attr+=",";
+                final_attr+=prop.translate.y+"px";
+                final_attr+=") ";
                 
-            }else if(elem.prop==View.TRANSLATE_Y){
-                final_attr="translate(0px," +
-                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px)"+
-                        " rotateZ(0.001deg);";
+                //Adding rotation
+                final_attr+=" rotate("+prop.rotate+"deg )";
+                
+                //Adding scale anims
+                final_attr+=" scale("+prop.scale+") rotateZ(0.001deg);";
+                
+                 //Adding opacity
+                final_attr+=" opacity : "+prop.opacity;
+
+                
+                anims+="\n"+frame_per + " { "+final_attr+" } ";
             }
-            anims += ("\n"+(t0*100).toFixed(2))+"% "+"{ transform: "+final_attr+" } ";
-            t0 +=0.0025;
-        }
-        this.final_attr=final_attr;
-        anims="@-webkit-keyframes "+anim_name+"\n"+
+            
+            this.animations[anim_id]["final_attr"]=final_attr;
+            this.animations[anim_id]["anim_name"]=anim_name;
+            
+            anims="@-webkit-keyframes "+anim_name+"\n"+
                 " {"+anims+"}\n\n"+
                 "@keyframes "+anim_name+"\n"+
                " {"+anims+"}\n\n";
        
-        
-        //add the element to the animation
-        document.getElementsByTagName('head')[0].innerHTML+=
-                "<style type=\"text/css\" id=\""+elem.elem.dataset.styleId+"\">"+anims+
+               //add the element to the animation
+            document.getElementById("AIJAS_style").innerHTML+=
+                "<style type=\"text/css\" id=\""+anim_id+"\">"+anims+
                 "</style>";
-                
-        return anim_name;        
+
+        }
+//        var t0=0;
+//        var anim_name="AJAIS"+elem.elem.dataset.styleId;
+//        var anims='';
+//        var final_attr='';
+//        while(t0<=1){
+////            this.log("t0",t0);
+//            if(elem.prop==View.TRANSLATE_X){
+//                final_attr="transform : ";
+//                final_attr+="translate(" +
+//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px,0px)"+
+//                        " rotateZ(0.001deg);";
+//                
+//            }else if(elem.prop==View.TRANSLATE_Y){
+//                final_attr="transform : ";
+//                final_attr+="translate(0px," +
+//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px)"+
+//                        " rotateZ(0.001deg);";
+//            }
+//            else if(elem.prop==View.ROTATE){
+//                final_attr="transform : ";
+//                final_attr+="rotate(" +
+//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"deg)"+
+//                        " rotateZ(0.001deg);";
+//            }
+//            else if(elem.prop==View.ALPHA){
+//                final_attr="opacity : ";
+//                final_attr+=(this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(3)+
+//                        "; ";
+//            }
+//            anims += ("\n"+(t0*100).toFixed(2))+"% "+"{ "+final_attr+" } ";
+//            t0 +=0.0025;
+//        }
+//        this.final_attr=final_attr;
+//        anims="@-webkit-keyframes "+anim_name+"\n"+
+//                " {"+anims+"}\n\n"+
+//                "@keyframes "+anim_name+"\n"+
+//               " {"+anims+"}\n\n";
+//       
+//        
+//        //add the element to the animation
+//        document.getElementById("AIJAS_style").innerHTML+=
+//                "<style type=\"text/css\" id=\""+elem.elem.dataset.styleId+"\">"+anims+
+//                "</style>";
+//                
+//        return anim_name;        
     } 
     
-    initialize(elm,name){
+    /*
+     * This function will generate appropriate keyfram css animation and 
+     * adds them to the DOM
+     * This is  used to track animation coordinates as framses
+     */
+    generateKeyFramesForMultipleAnims(){
+        this.animations={};
+        this.log("anims","total anims : "+this.animators.length);
+        var key_frame_upto=0;//this variable will get the value between 0 to 1 for keyframs per animation
+        var key_frame_from=0;//this variable will get the value between 0 to 1 for keyframs per animation
+        var total_duration=this.getTotalDuration();
+        for (var i=0;i<this.animators.length;i++){
+            key_frame_from+=key_frame_upto;
+            var anims=this.getAnimator(i);
+            for(var i=0;i<anims.length;i++){
+                    key_frame_upto=key_frame_from+(anims[i].duration/total_duration);
+                    this.generateIndivisualParams(anims[i],key_frame_from,key_frame_upto);    
+            }
+        }
+    }
+    
+    generateIndivisualParams(elem,key_frame_from,key_frame_upto){
+        var dist=elem.to-elem.from;
+        var per='';
+        var id=elem.elem.dataset.styleId;
+        var t0=key_frame_from;
         
-            this.elem.addEventListener("webkitAnimationStart", function(){
-
-            });
-            this.elem.addEventListener("webkitAnimationIteration", function(){
-
-            });
-            this.elem.addEventListener("webkitAnimationEnd", function(){
-
-            });
-
-            this.elem.addEventListener("animationstart", function(evt){
-                elm.animationStart(elm);
-            });
-            this.elem.addEventListener("animationiteration", function(){
-
-            });
-            this.elem.addEventListener("animationend", function(evt){
-                elm.name=name;
-                elm.animationEnd(elm);
-            });
-
-            this.elem.style.animationName=name;
-            this.elem.style.WebkitAnimationName=name;
+        if(this.animations[id]==undefined){
+            this.animations[id]={};
+            this.animations[id]["elem"]=elem;
+            this.animations[id]["anim"]={};
+        }
+       
+        while(t0<=key_frame_upto){
+            per=((t0*100).toFixed(2))+"%";
+            if(this.animations[id]["anim"][per]==undefined){
+                this.animations[id]["anim"][per]={
+                    translate:{x:0,y:0,z:0},
+                    rotate:0,
+                    opacity:1,
+                    scale:1
+                };
+            }
+            if(elem.prop==View.TRANSLATE_X){
+                 this.animations[id]["anim"][per]['translate'].x=
+                         (elem.from+dist*elem.interpolar.getInterpolar(t0)).toFixed(0);
+            }else if(elem.prop==View.TRANSLATE_Y){
+                 this.animations[id]["anim"][per]['translate'].y=
+                         (elem.from+dist*elem.interpolar.getInterpolar(t0)).toFixed(0);
+            }
+             else if(elem.prop==View.ROTATE){
+                 this.animations[id]["anim"][per]["rotate"]=
+                         (elem.from+dist*elem.interpolar.getInterpolar(t0)).toFixed(0);
+            }
+            else if(elem.prop==View.ALPHA){
+                this.animations[id]["anim"][per]["opacity"]=
+                        (elem.from+dist*elem.interpolar.getInterpolar(t0)).toFixed(3);
+            }else if(elem.prop==View.SCALE){
+                this.animations[id]["anim"][per]["scale"]=
+                        (elem.from+dist*elem.interpolar.getInterpolar(t0)).toFixed(3);
+            }
+            t0 +=0.0025;
+        }
+        this.log("animation",JSON.stringify(this.animations[id]["anim"]));
+        
+    }
+    
+    getAnimator(index){
+        var animators=[];
+        for(var i=0;i<this.animators.length;i++){
+            this.log("getAnimator","checking index: "+this.animators[i].index+" supplied :"+index);
+            if(this.animators[i].index ==index){ animators.push(this.animators[i].elem);}
+        }
+        this.log("getAnimator","total animators  of index: "+index+" = "+animators.length);
+        return animators;
+    }
+    
+    getTotalDuration(){
+        var duration=0;
+        var index=-1;
+        var prev_duration=0;
+        for(var i=0;i<this.animators.length;i++){
+            if(this.animators[i].index>index){
+                prev_duration=this.animators[i].elem.duration;
+                duration+=prev_duration;
+            }else if(this.animators[i].index==index){
+                 duration+=Math.abs(this.animators[i].elem.duration-prev_duration);
+                 prev_duration=(this.animators[i].elem.duration>prev_duration)?this.animators[i].elem.duration:prev_duration;
+            }
+            index=this.animators[i].index;
+        }
+        this.log("getTotalDuration","total: "+duration);
+        return duration;
+    }
+    
+    initialize(elem,name,final_attr){
             
-            this.elem.style.animationDuration=this.duration+"ms";
-            this.elem.style.WebkitAnimationDuration=this.duration+"ms";
+            elem.elem.addEventListener("webkitAnimationStart", function(){
+
+            });
+            elem.elem.addEventListener("webkitAnimationIteration", function(){
+
+            });
+            elem.elem.addEventListener("webkitAnimationEnd", function(){
+
+            });
+
+            elem.elem.addEventListener("animationstart", function(evt){
+                elem.animationStart(elem);
+            });
+            elem.elem.addEventListener("animationiteration", function(){
+
+            });
+            elem.elem.addEventListener("animationend", function(evt){
+                elem.name=name;
+                elem.final_attr=final_attr;
+                elem.animationEnd(elem);
+            });
+
+            elem.elem.style.animationName=name;
+            elem.elem.style.WebkitAnimationName=name;
             
-            this.elem.style.WebkitAnimationFillMode = "forwards";  // Code for Chrome, Safari, and Opera
-            this.elem.style.animationFillMode = "forwards";
+            elem.elem.style.animationDuration=elem.duration+"ms";
+            elem.elem.style.WebkitAnimationDuration=elem.duration+"ms";
+            
+            elem.elem.style.WebkitAnimationFillMode = "forwards";  // Code for Chrome, Safari, and Opera
+            elem.elem.style.animationFillMode = "forwards";
 
     }
     
@@ -122,24 +290,15 @@ class ValueAnimator{
     }
     
     animationStart(elem){
-       elem.log("anim","Start");
+       this.log("anim","Start");
     }
     animationRepeat(){
-        elem.log("anim","Repeat");
+        this.log("anim","Repeat");
     }
     animationEnd(elem){
-        
-        var expiredAnim=document.getElementById(elem.elem.dataset.styleId);
-        
-        if(expiredAnim != undefined){//remove the prevous style syntax
-            expiredAnim.outerHTML='';
-        }
-        elem.elem.style.animationName=null;
-        elem.elem.style.WebkitAnimationName=null;
-            
-        elem.elem.style.animationDuration=null;
-        elem.elem.style.WebkitAnimationDuration=null;;
-        elem.log("anim","End attr -> "+elem.final_attr);
+        elem.elem.removeAttribute("style"); 
+        elem.elem.setAttribute("style",elem.prev_style+";/*--AIJAS__0__--*/"+elem.final_attr+"/*--AIJAS__1__--*/");
+        this.log("anim","End attr -> "+elem.final_attr);
         
     }
 }
@@ -154,15 +313,69 @@ class ObjectAnimator extends ValueAnimator{
       anim.animators=[];//here we add the animators and index of animation
       anim.from=from;
       anim.elem=elem;
+      
+      /*replacing the previous used styles
+       * The animation final attribure style starts with --AIJAS__0__-- as comment
+       * and ends with --AIJAS__1__-- as comment
+       * The value in between these comments are the styles generated from the previois
+       * AIJAS animation
+      */
+      var prev_style=elem.getAttribute("style");
+     
+      if(prev_style!=undefined){
+           var startKEY=";/*--AIJAS__0__--*/";
+           var endKEY="/*--AIJAS__1__--*/";
+           var start_index=prev_style.indexOf(startKEY);
+           var end_index=prev_style.indexOf(endKEY)+endKEY.length;
+           
+           console.log("index start-index : "+start_index+" end-index : "+end_index);
+           if(start_index!=1 && end_index!=-1){
+                var replace=prev_style.substr(start_index,(end_index-start_index));
+                prev_style=prev_style.replace(replace,'');
+           }
+           anim.prev_style=prev_style;
+      }else{
+          anim.prev_style='';
+      }
+      //---------------------------------------//
       anim.to=to;
       anim.prop=type;
       anim.animators.push({elem:anim,index:0});
       return anim;
     }
+    
+    static ofFloat(elem,type,from,to){
+      return ObjectAnimator.ofInt(elem,type,from,to);
+    }
    
     
 }
 
+
+class AnimatorSet extends ValueAnimator{
+    
+    constructor(){super();}
+    
+    playTogether(anims){
+        var index=this.animators.length;
+        this.log("AnimatorSet","anim index: "+index);
+        for(var i=0;i<anims.length;i++){
+            this.animators.push({elem:anims[i],index:index});
+        }
+    }
+    
+}
+
+
+
+/*
+ * _______________________________INTERPOLAT SECTION_________________________________
+ * 
+ *   
+ * Intepolars define the way in which the timing function represent the 
+ * entire animatiuon
+ * we can also define our own interpolart
+ */
 class LinearInterpolar{
     
     constructor(){}
@@ -197,5 +410,7 @@ class BounceInterpolator{
         return t * t * 8.0;
     }
 }
+
+//***************************END Interpolar section**************************************//
 
 

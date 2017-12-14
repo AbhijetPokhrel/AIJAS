@@ -12,6 +12,7 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <div id="AIJAS_style"></div>
         <div class="centerXY content">
 
             <select class="selector" onchange="loadAnim(this)">
@@ -47,7 +48,7 @@ and open the template in the editor.
                      var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                             View.TRANSLATE_X, 100, 400);
                     anim.setDuration(1000);
-                    anim.setInterpolar(new BounceInterpolator());
+                    anim.setInterpolar(new LinearInterpolar());
                     anim.start(); 
                     
                 }else if(elem.value==View.TRANSLATE_Y){
@@ -55,8 +56,50 @@ and open the template in the editor.
                     var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                             View.TRANSLATE_Y, 100, 400);
                     anim.setDuration(1000);
+                    anim.setInterpolar(new AccelerateDecelerateInterpolator());
+                    anim.start();    
+                }
+                else if(elem.value==View.ROTATE){
+                    
+                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.ROTATE, 100, 400);
+                    anim.setDuration(1000);
+                    anim.setInterpolar(new AccelerateDecelerateInterpolator());
+                    anim.start();    
+                }
+                else if(elem.value==View.ALPHA){
+                    
+                    var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
+                            View.ALPHA, 0.1, 1);
+                    anim.setDuration(1000);
+                    anim.start();    
+                }
+                else if(elem.value==View.SCALE){
+                    var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
+                            View.SCALE, 0.1, 1);
+                    anim.setDuration(1000);
                     anim.setInterpolar(new BounceInterpolator());
                     anim.start();    
+                }
+                else{
+                     var tx = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.TRANSLATE_X, 100, 300);
+                    tx.setDuration(1000);
+                    tx.setInterpolar(new BounceInterpolator());
+                    
+                    var ty = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.TRANSLATE_Y, 10, 300);
+                    ty.setDuration(1000);
+                    ty.setInterpolar(new BounceInterpolator());
+                    
+                    var rotate = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                            View.ROTATE, 100, 400);
+                    rotate.setDuration(1000);
+                    rotate.setInterpolar(new BounceInterpolator());
+                    
+                    var final=new AnimatorSet();
+                    final.playTogether([tx,ty,rotate]);
+                    final.start();
                 }
                 
             }
