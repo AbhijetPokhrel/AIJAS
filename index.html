@@ -45,10 +45,9 @@ and open the template in the editor.
                 console.log("load "+elem.value);
                 if(elem.value==View.TRANSLATE_X){
                     
-                     var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                             View.TRANSLATE_X, 100, 400);
                     anim.setDuration(1000);
-                    anim.setInterpolar(new LinearInterpolar());
                     anim.start(); 
                     
                 }else if(elem.value==View.TRANSLATE_Y){
@@ -56,7 +55,8 @@ and open the template in the editor.
                     var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                             View.TRANSLATE_Y, 100, 400);
                     anim.setDuration(1000);
-                    anim.setInterpolar(new AccelerateDecelerateInterpolator());
+                    anim.setInterpolar(new CycleInterpolator(0.5));
+                    anim.setRepeatCount(3);
                     anim.start();    
                 }
                 else if(elem.value==View.ROTATE){

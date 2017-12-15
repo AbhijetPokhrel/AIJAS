@@ -7,6 +7,11 @@
 class View{
 }
 
+class Animation{
+    
+}
+Animation.INFINIT=-1;
+
 View.TRANSLATE_X = 1;
 View.TRANSLATE_Y = 2;
 View.ROTATE = 3;
@@ -34,6 +39,7 @@ class ValueAnimator{
         this.animators=[];
         this.IS_ANIM_SET=false;
         this.interpolar=new LinearInterpolar();
+        this.iteration=1;
     }
     
     
@@ -43,6 +49,9 @@ class ValueAnimator{
     
     setInterpolar(intrplr){
         this.interpolar=intrplr;
+    }
+    setRepeatCount(count){
+        this.iteration=count;
     }
     
     start(){
@@ -108,51 +117,6 @@ class ValueAnimator{
                 "</style>";
 
         }
-//        var t0=0;
-//        var anim_name="AJAIS"+elem.elem.dataset.styleId;
-//        var anims='';
-//        var final_attr='';
-//        while(t0<=1){
-////            this.log("t0",t0);
-//            if(elem.prop==View.TRANSLATE_X){
-//                final_attr="transform : ";
-//                final_attr+="translate(" +
-//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px,0px)"+
-//                        " rotateZ(0.001deg);";
-//                
-//            }else if(elem.prop==View.TRANSLATE_Y){
-//                final_attr="transform : ";
-//                final_attr+="translate(0px," +
-//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"px)"+
-//                        " rotateZ(0.001deg);";
-//            }
-//            else if(elem.prop==View.ROTATE){
-//                final_attr="transform : ";
-//                final_attr+="rotate(" +
-//                        (this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(0)+"deg)"+
-//                        " rotateZ(0.001deg);";
-//            }
-//            else if(elem.prop==View.ALPHA){
-//                final_attr="opacity : ";
-//                final_attr+=(this.from+dist*this.interpolar.getInterpolar(t0)).toFixed(3)+
-//                        "; ";
-//            }
-//            anims += ("\n"+(t0*100).toFixed(2))+"% "+"{ "+final_attr+" } ";
-//            t0 +=0.0025;
-//        }
-//        this.final_attr=final_attr;
-//        anims="@-webkit-keyframes "+anim_name+"\n"+
-//                " {"+anims+"}\n\n"+
-//                "@keyframes "+anim_name+"\n"+
-//               " {"+anims+"}\n\n";
-//       
-//        
-//        //add the element to the animation
-//        document.getElementById("AIJAS_style").innerHTML+=
-//                "<style type=\"text/css\" id=\""+elem.elem.dataset.styleId+"\">"+anims+
-//                "</style>";
-//                
-//        return anim_name;        
     } 
     
     /*
@@ -282,6 +246,14 @@ class ValueAnimator{
             
             elem.elem.style.WebkitAnimationFillMode = "forwards";  // Code for Chrome, Safari, and Opera
             elem.elem.style.animationFillMode = "forwards";
+            
+            if(this.iteration>1){
+                elem.elem.style.WebkitAnimationIterationCount = this.iteration;  // Code for Chrome, Safari, and Opera
+                elem.elem.style.animationIterationCount = this.iteration;
+            }else if(this.iteration==-1){
+                elem.elem.style.WebkitAnimationIterationCount = "infinite";  // Code for Chrome, Safari, and Opera
+                elem.elem.style.animationIterationCount = "infinite";
+            }
 
     }
     
@@ -391,6 +363,32 @@ class AccelerateDecelerateInterpolator{
     
     getInterpolar(t){
        return (Math.cos((t + 1) * Math.PI) / 2.0) + 0.5;
+    }
+}
+
+class CycleInterpolator{
+    
+    constructor(cycle=2.0){this.cycle=cycle}
+    
+    getInterpolar(t){
+        return Math.sin(2*Math.PI*this.cycle*t);
+    }
+}
+
+class AccelerateInterpolator{
+    
+    constructor(factor=2.0){this.factor=factor;}
+    getInterpolar(t){
+       return Math.pow(t,2*this.factor);
+    }
+}
+
+class OvershootInterpolar{
+    
+    constructor(tension=2.5){this.tension=tension;}
+    getInterpolar(t){
+        t -= 1.0;
+        return t * t * ((this.tension + 1) * t + this.tension) + 1.0;
     }
 }
 
