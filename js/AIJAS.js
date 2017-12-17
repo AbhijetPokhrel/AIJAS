@@ -5,6 +5,7 @@
  */
 
 class View{
+    
 }
 
 class Animation{
@@ -31,6 +32,7 @@ View.SCALE=5;
  *                  opacity:val from 0 to 1
  *               }}
  */
+var ACTIVE_ANIMATION={};//this variable stores the currently being played animation
 
 class ValueAnimator{
     
@@ -53,16 +55,18 @@ class ValueAnimator{
     setRepeatCount(count){
         this.iteration=count;
     }
+    setAnimationListener(listener){
+        this.anim_listener=listener;
+    }
     
     start(){
 
         this.generateKeyFramesForMultipleAnims();
         this.generateKeyFrames();
         for(var anim_id in this.animations){
-            this.initialize(this.animations[anim_id]['elem'],
-                            this.animations[anim_id]['anim_name'],
-                            this.animations[anim_id]['final_attr']
-                           );
+            this.animations[anim_id]['elem'].name=this.animations[anim_id]['anim_name'];
+            this.animations[anim_id]['elem'].final_attr=this.animations[anim_id]['final_attr'];
+            this.initialize(this.animations[anim_id]['elem']);
         }
         
     }
@@ -81,7 +85,7 @@ class ValueAnimator{
             var final_attr='';
             
             for(var frame_per in this.animations[anim_id]["anim"]){
-                this.log("frame",frame_per);
+//                this.log("frame",frame_per);
                 prop=this.animations[anim_id]["anim"][frame_per];
                 // Adding translatoin
                 final_attr='transform : translate(';
@@ -112,9 +116,15 @@ class ValueAnimator{
                " {"+anims+"}\n\n";
        
                //add the element to the animation
-            document.getElementById("AIJAS_style").innerHTML+=
-                "<style type=\"text/css\" id=\""+anim_id+"\">"+anims+
-                "</style>";
+               var style=document.getElementById(anim_id);
+               if(style!=undefined){
+                   style.innerHTML=anims;
+               }else{
+                   document.getElementById("AIJAS_style").innerHTML+=
+                       "<style type=\"text/css\" id=\""+anim_id+"\">"+anims+
+                       "</style>";      
+               }
+            
 
         }
     } 
@@ -182,17 +192,17 @@ class ValueAnimator{
             }
             t0 +=0.0025;
         }
-        this.log("animation",JSON.stringify(this.animations[id]["anim"]));
+//        this.log("animation",JSON.stringify(this.animations[id]["anim"]));
         
     }
     
     getAnimator(index){
         var animators=[];
         for(var i=0;i<this.animators.length;i++){
-            this.log("getAnimator","checking index: "+this.animators[i].index+" supplied :"+index);
+//            this.log("getAnimator","checking index: "+this.animators[i].index+" supplied :"+index);
             if(this.animators[i].index ==index){ animators.push(this.animators[i].elem);}
         }
-        this.log("getAnimator","total animators  of index: "+index+" = "+animators.length);
+//        this.log("getAnimator","total animators  of index: "+index+" = "+animators.length);
         return animators;
     }
     
@@ -210,68 +220,145 @@ class ValueAnimator{
             }
             index=this.animators[i].index;
         }
-        this.log("getTotalDuration","total: "+duration);
+//        this.log("getTotalDuration","total: "+duration);
         return duration;
     }
     
-    initialize(elem,name,final_attr){
-            
-            elem.elem.addEventListener("webkitAnimationStart", function(){
-
-            });
-            elem.elem.addEventListener("webkitAnimationIteration", function(){
-
-            });
-            elem.elem.addEventListener("webkitAnimationEnd", function(){
-
-            });
-
-            elem.elem.addEventListener("animationstart", function(evt){
-                elem.animationStart(elem);
-            });
-            elem.elem.addEventListener("animationiteration", function(){
-
-            });
-            elem.elem.addEventListener("animationend", function(evt){
-                elem.name=name;
-                elem.final_attr=final_attr;
-                elem.animationEnd(elem);
-            });
-
-            elem.elem.style.animationName=name;
-            elem.elem.style.WebkitAnimationName=name;
-            
-            elem.elem.style.animationDuration=elem.duration+"ms";
-            elem.elem.style.WebkitAnimationDuration=elem.duration+"ms";
-            
-            elem.elem.style.WebkitAnimationFillMode = "forwards";  // Code for Chrome, Safari, and Opera
-            elem.elem.style.animationFillMode = "forwards";
-            
-            if(this.iteration>1){
-                elem.elem.style.WebkitAnimationIterationCount = this.iteration;  // Code for Chrome, Safari, and Opera
-                elem.elem.style.animationIterationCount = this.iteration;
-            }else if(this.iteration==-1){
-                elem.elem.style.WebkitAnimationIterationCount = "infinite";  // Code for Chrome, Safari, and Opera
-                elem.elem.style.animationIterationCount = "infinite";
+    initialize(elem){
+            this.log("initialize","final attr : "+elem.final_attr);
+            if(ACTIVE_ANIMATION[elem.elem.dataset.styleId]==undefined){
+               ACTIVE_ANIMATION[elem.elem.dataset.styleId]={}; 
             }
+            
+            if(ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]==undefined){
+                this.log("initialize","new animation");
+                this.addEventListeners(elem);//adding listernes for animation add only once
+                setTimeout(this.setAnimPropertise(elem,this.iteration), 0);
+            }else if(ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]==false){
+                this.log("initialize","registetring animation");
+                setTimeout(this.setAnimPropertise(elem,this.iteration), 0)
+            }
+            else{
+                this.log("initialize","interrupt animation");
+                elem.elem.removeAttribute("style"); 
+                elem.elem.setAttribute("style",elem.prev_style+";");
+                this.refresh(elem.elem);
+                elem.final_attr='';
+                setTimeout(this.setAnimPropertise(elem,this.iteration), 1000)
+            }
+            
+           
 
+    }
+    
+    setAnimPropertise(elem,iteration){
+        this.log("setAnimPropertise","init new anim prop");
+        ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]=true;
+        //NOW SET THE NEW iNSTANCE
+        ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]=this;
+
+        elem.elem.style.animationName=elem.name;
+        elem.elem.style.WebkitAnimationName=elem.name;
+            
+        elem.elem.style.animationDuration=elem.duration+"ms";
+        elem.elem.style.WebkitAnimationDuration=elem.duration+"ms";
+            
+        elem.elem.style.WebkitAnimationFillMode = "forwards";  // Code for Chrome, Safari, and Opera
+        elem.elem.style.animationFillMode = "forwards";
+            
+        if(this.iteration>1){
+            elem.elem.style.WebkitAnimationIterationCount = iteration;  // Code for Chrome, Safari, and Opera
+            elem.elem.style.animationIterationCount = iteration;
+        }else if(this.iteration==-1){
+            elem.elem.style.WebkitAnimationIterationCount = "infinite";  // Code for Chrome, Safari, and Opera
+            elem.elem.style.animationIterationCount = "infinite";
+        }else{
+            elem.elem.style.WebkitAnimationIterationCount = null;  // Code for Chrome, Safari, and Opera
+            elem.elem.style.animationIterationCount = null;
+        }
+            
+    }
+    
+    addEventListeners(elem){
+           
+            elem.elem.addEventListener("webkitAnimationStart", function s(){
+                ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationStart(elem.elem.dataset.styleId);
+            });
+            elem.elem.addEventListener("webkitAnimationIteration", function i(){
+                 ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationRepeat(elem.elem.dataset.styleId);
+
+            });
+            elem.elem.addEventListener("webkitAnimationEnd", function e(){
+                ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationEnd(elem.elem.dataset.styleId);
+
+            });
+
+            elem.elem.addEventListener("animationstart", function s(evt){
+                ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationStart(elem.elem.dataset.styleId);
+            });
+            elem.elem.addEventListener("animationiteration", function i(){
+                 ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationRepeat(elem.elem.dataset.styleId);
+            });
+            elem.elem.addEventListener("animationend", function e(evt){
+                ACTIVE_ANIMATION[elem.elem.dataset.styleId]["instance"]
+                        .animationEnd(elem.elem.dataset.styleId);
+            });
+    }
+    
+    refresh(elem){
+        elem.style.animationName=null;
+        elem.style.WebkitAnimationName=null;
+            
+        elem.style.animationDuration=null;
+        elem.style.WebkitAnimationDuration=null;
+            
+        elem.style.WebkitAnimationFillMode = null;  // Code for Chrome, Safari, and Opera
+        elem.style.animationFillMode = null;
+            
+        elem.style.WebkitAnimationIterationCount = null;  // Code for Chrome, Safari, and Opera
+        elem.style.animationIterationCount = null;
+        
+        elem.elemoffsetHeight;
     }
     
     log(str,content){
-        console.log(str+" :: "+content);
+//        console.log(str+" :: "+content);
     }
     
-    animationStart(elem){
-       this.log("anim","Start");
+    animationStart(id){
+       this.log("animstart","Start");
+       if(this.anim_listener!=undefined){
+           this.anim_listener.onAnimationStart(id);
+       }
     }
-    animationRepeat(){
-        this.log("anim","Repeat");
+    animationRepeat(id){
+        this.log("animrepeat","Repeat");
+        if(this.anim_listener!=undefined){
+           this.anim_listener.onAnimationRepeat(id);
+        }
     }
-    animationEnd(elem){
-        elem.elem.removeAttribute("style"); 
-        elem.elem.setAttribute("style",elem.prev_style+";/*--AIJAS__0__--*/"+elem.final_attr+"/*--AIJAS__1__--*/");
-        this.log("anim","End attr -> "+elem.final_attr);
+    animationEnd(id){
+        var elem=this.animations[id]['elem'];
+        if(ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]!=undefined
+                &&ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]==true){
+             this.log("animend","animation end"+elem.elem.dataset.styleId);
+            elem.elem.removeAttribute("style"); 
+            elem.elem.setAttribute("style",elem.prev_style+";/*--AIJAS__0__--*/"+elem.final_attr+"/*--AIJAS__1__--*/");
+            this.log("anim","finally-- \nfinal:"+elem.final_attr+" \n prev style: "+elem.prev_style);
+            ACTIVE_ANIMATION[elem.elem.dataset.styleId]["is_active"]=false; 
+        }else{
+            this.log("animend","non registered animation end");
+        }
         
+        if(this.anim_listener!=undefined){
+           this.anim_listener.onAnimationEnd(id);
+        }
+             
     }
 }
 
@@ -285,6 +372,14 @@ class ObjectAnimator extends ValueAnimator{
       anim.animators=[];//here we add the animators and index of animation
       anim.from=from;
       anim.elem=elem;
+      if(ACTIVE_ANIMATION[elem.dataset.styleId]!=undefined){
+          if(ACTIVE_ANIMATION[elem.dataset.styleId]["is_active"]!=undefined){
+              if(ACTIVE_ANIMATION[elem.dataset.styleId]["is_active"]==true){
+                throw new ELEM_BUSY_EXCEPTION("Elem has on going animation");
+              }
+          }
+      }
+     
       
       /*replacing the previous used styles
        * The animation final attribure style starts with --AIJAS__0__-- as comment
@@ -411,4 +506,11 @@ class BounceInterpolator{
 
 //***************************END Interpolar section**************************************//
 
+
+//_________________________EXCEPOTIONS____________________________________
+
+function ELEM_BUSY_EXCEPTION(message) {
+   this.message = message;
+   this.name = 'ELEM_BUSY_EXCEPTION';
+}
 

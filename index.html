@@ -19,7 +19,7 @@ and open the template in the editor.
 
                 <option value="0">--Select Animation--</option>
                 <option value="1">Translate_X</option>
-                 <option value="2">Translate_Y</option>
+                <option value="2">Translate_Y</option>
                 <option value="3">Rotate</option>
                 <option value="4">Fade</option>
                 <option value="5">Scale</option>
@@ -29,80 +29,98 @@ and open the template in the editor.
 
             <div class="anim-section">
                 <div class="img-holder">
-                     <img src="images/ultraball.png" id="anim-object" data-style-id="ball11"/>
+                    <img src="images/ultraball.png" id="anim-object" data-style-id="ball11"/>
                 </div>
-                
+
             </div>
 
         </div>
         <script src="js/AIJAS.js" ></script>
         <script type="text/javascript">
-            window.onload = function () {
-                
-            }
-            
-            function loadAnim(elem){
-                console.log("load "+elem.value);
-                if(elem.value==View.TRANSLATE_X){
-                    
-                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.TRANSLATE_X, 100, 400);
-                    anim.setDuration(1000);
-                    anim.start(); 
-                    
-                }else if(elem.value==View.TRANSLATE_Y){
-                    
-                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.TRANSLATE_Y, 100, 400);
-                    anim.setDuration(1000);
-                    anim.setInterpolar(new CycleInterpolator(0.5));
-                    anim.setRepeatCount(3);
-                    anim.start();    
+                window.onload = function () {
+
                 }
-                else if(elem.value==View.ROTATE){
-                    
-                    var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.ROTATE, 100, 400);
-                    anim.setDuration(1000);
-                    anim.setInterpolar(new AccelerateDecelerateInterpolator());
-                    anim.start();    
+
+                function loadAnim(elem) {
+                    console.log("load " + elem.value);
+                    if (elem.value == View.TRANSLATE_X) {
+
+                        var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.TRANSLATE_X, 100, 400);
+                        anim.setDuration(1000);
+                        anim.start();
+
+                    } else if (elem.value == View.TRANSLATE_Y) {
+
+                        var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.TRANSLATE_Y, 100, 400);
+                        anim.setDuration(1000);
+                        anim.setInterpolar(new CycleInterpolator(0.5));
+                        anim.setRepeatCount(3);
+                        anim.setAnimationListener({
+                            onAnimationStart: function (data_set_id) {
+                                console.log("animaitn start main Id : " + data_set_id);
+                            },
+                            onAnimationRepeat: function (data_set_id) {
+                                console.log("animaitn repeat main Id : " + data_set_id);
+                            },
+                            onAnimationEnd: function (data_set_id) {
+                                console.log("animaitn end main Id : " + data_set_id);
+                            }
+                        });
+                        anim.start();
+                    } else if (elem.value == View.ROTATE) {
+
+                        var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.ROTATE, 100, 400);
+                        anim.setDuration(1000);
+                        anim.setInterpolar(new AccelerateDecelerateInterpolator());
+                        anim.start();
+                    } else if (elem.value == View.ALPHA) {
+
+                        var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
+                                View.ALPHA, 0.1, 1);
+                        anim.setDuration(1000);
+                        anim.start();
+                    } else if (elem.value == View.SCALE) {
+                        var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
+                                View.SCALE, 0.1, 1);
+                        anim.setDuration(1000);
+                        anim.setInterpolar(new BounceInterpolator());
+                        anim.start();
+                    } else {
+                        var tx = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.TRANSLATE_X, 100, 300);
+                        tx.setDuration(1000);
+                        tx.setInterpolar(new BounceInterpolator());
+
+                        var ty = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.TRANSLATE_Y, 10, 300);
+                        ty.setDuration(1000);
+                        ty.setInterpolar(new BounceInterpolator());
+
+                        var rotate = ObjectAnimator.ofInt(document.getElementById("anim-object"),
+                                View.ROTATE, 100, 400);
+                        rotate.setDuration(1000);
+                        rotate.setInterpolar(new BounceInterpolator());
+
+                        var final = new AnimatorSet();
+                        final.playTogether([tx, ty, rotate]);
+                        final.setAnimationListener({
+                            onAnimationStart: function (data_set_id) {
+                                console.log("animaitn start main Id : " + data_set_id);
+                            },
+                            onAnimationRepeat: function (data_set_id) {
+                                console.log("animaitn repeat main Id : " + data_set_id);
+                            },
+                            onAnimationEnd: function (data_set_id) {
+                                console.log("animaitn end main Id : " + data_set_id);
+                            }
+                        });
+                        final.start();
+                    }
+
                 }
-                else if(elem.value==View.ALPHA){
-                    
-                    var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
-                            View.ALPHA, 0.1, 1);
-                    anim.setDuration(1000);
-                    anim.start();    
-                }
-                else if(elem.value==View.SCALE){
-                    var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
-                            View.SCALE, 0.1, 1);
-                    anim.setDuration(1000);
-                    anim.setInterpolar(new BounceInterpolator());
-                    anim.start();    
-                }
-                else{
-                     var tx = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.TRANSLATE_X, 100, 300);
-                    tx.setDuration(1000);
-                    tx.setInterpolar(new BounceInterpolator());
-                    
-                    var ty = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.TRANSLATE_Y, 10, 300);
-                    ty.setDuration(1000);
-                    ty.setInterpolar(new BounceInterpolator());
-                    
-                    var rotate = ObjectAnimator.ofInt(document.getElementById("anim-object"),
-                            View.ROTATE, 100, 400);
-                    rotate.setDuration(1000);
-                    rotate.setInterpolar(new BounceInterpolator());
-                    
-                    var final=new AnimatorSet();
-                    final.playTogether([tx,ty,rotate]);
-                    final.start();
-                }
-                
-            }
         </script>
     </body>
 </html>
