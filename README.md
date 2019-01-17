@@ -13,7 +13,7 @@ Well the main logic is the library creates a set of css styles for animations an
 
 The style div will hold all the style that will be generated while creating animation
 
-```
+```html
 <div id="AIJAS_style"></div>
 ```
 
@@ -21,14 +21,14 @@ The style div will hold all the style that will be generated while creating anim
 
 The data-style-id will help to uniquely identify the elements style while animating.
 
-```
+```html
 <img src="images/ultraball.png" id="anim-object" data-style-id="ball11"/>
 ```
 
 #### Step 3 : Set up animation object
 
 The animation object is the one that will animate our element. Lets see the code below
-```
+```js
 var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                                 View.TRANSLATE_X, 100, 400);
                         anim.setDuration(1000);
@@ -44,7 +44,7 @@ Then we set the duration of animation and finally we start our animation.
 
 The translate animation is used to do do horizontal and vertical animation
 
-```
+```js
 var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                                 View.TRANSLATE_X, 100, 400);
                         anim.setDuration(1000);
@@ -53,7 +53,7 @@ var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
  
  For Y direction animation 
  
- ```
+ ```js
  var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                                 View.TRANSLATE_Y, 100, 400);
                         anim.setDuration(1000);
@@ -64,7 +64,7 @@ var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
  
  The rotate animation rotates element base on the angle in degree
  
- ```
+ ```js
  var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                                 View.ROTATE, 100, 400);
                         anim.setDuration(1000);
@@ -78,7 +78,7 @@ Here you can see something new called Interpolar. We will cover that below
 
 The fade animation can be done as 
 
-```
+```js
  var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
                                 View.ALPHA, 0.1, 1);
                         anim.setDuration(1000);
@@ -89,7 +89,7 @@ The fade animation can be done as
  
  The scale animation animates the element by changin its size 
  
- ```
+ ```js
  var anim = ObjectAnimator.ofFloat(document.getElementById("anim-object"),
                                 View.SCALE, 0.1, 1);
                         anim.setDuration(1000);
@@ -101,7 +101,7 @@ The fade animation can be done as
  
  With combined animation we can create the animation by using set of animations. This is obtained by the help of animator set object.
  
- ```
+ ```js
  var tx = ObjectAnimator.ofInt(document.getElementById("anim-object"),
                                 View.TRANSLATE_X, 100, 300);
                         tx.setDuration(1000);
@@ -123,7 +123,7 @@ The fade animation can be done as
  
  An animation listener listens for animation events. Its pretty straight forward. It can be used with object animator as well as animator set
  
- ```
+ ```js
  anim.setAnimationListener({
                             onAnimationStart: function (data_set_id) {
                                 console.log("animaitn start main Id : " + data_set_id);
@@ -150,7 +150,7 @@ The fade animation can be done as
  
  You can also create you own interpolar function as  :
  
- ```
+ ```js
  class AccelerateInterpolator{
     
     constructor(factor=2.0){this.factor=factor;}
@@ -164,6 +164,7 @@ The fade animation can be done as
  
 Here the simple example of linear interpolar. It does not have any fancy effects
 
+```js
 class LinearInterpolar{
     
     constructor(){}
@@ -173,13 +174,13 @@ class LinearInterpolar{
     }
 }
  
- 
+ ```
  
 
 ### Enjoy animating !!
 
 
-```
+```html
 <html>
     <head>
         <title>Animation in JAVASCRIPT Android Style</title>
