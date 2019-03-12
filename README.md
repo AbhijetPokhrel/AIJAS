@@ -212,7 +212,7 @@ class LinearInterpolar{
             </div>
 
         </div>
-        <script src="js/AIJAS.js" ></script>
+        <script src="dist/AIJAS.js" ></script>
         <script type="text/javascript">
                 window.onload = function () {
                 }
