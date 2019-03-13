@@ -4,6 +4,13 @@ Animation in JAVASCRIPT Android Style
 Easily create javscript animation from very few line of code.
 Experience animation coding as you do animation in android.
 
+## Installation
+
+```
+npm install aijas
+```
+
+
 ![Alt text](images/ezgif.com-video-to-gif.gif?raw=true "Title")
 
 ## How it works
@@ -18,6 +25,8 @@ The style div will hold all the style that will be generated while creating anim
 ```html
 <div id="AIJAS_style"></div>
 ```
+
+If you are using AIJAS in libraries like react, make sure you add this div in index.html file
 
 #### Step 2: Set animating element data-style-id
 
@@ -38,6 +47,12 @@ var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
  ```                       
 this code will animate our image which has an id anim-object by translating it in x-axis from 100 to 400px from its current location. First an object animator is created by calling ObjectAnimator.ofInt where we pass our target element as parameter.
 Then we set the duration of animation and finally we start our animation. 
+
+If you are using npm package dont forget to import objects
+
+```
+import { ObjectAnimator, View } from 'aijas'
+```
 
 
 ## Diffrent type of animation supported
