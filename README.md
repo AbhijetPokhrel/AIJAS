@@ -18,15 +18,21 @@ npm install aijas
 Well the main logic is the library creates a set of css styles for animations and inseters into the style of div having id AIJAS_style. These style finally make the element animate. All the animation are possible by creating the keyframe based on the animation type you want to achieve. 
 
 
-#### Step1 : Set style div first
+#### Step 1: Import AIJAS
 
-The style div will hold all the style that will be generated while creating animation
+
+Add the AIJAS script
 
 ```html
-<div id="AIJAS_style"></div>
+<script src="dist/AIJAS.js" ></script>
 ```
 
-If you are using AIJAS in libraries like react, make sure you add this div in index.html file
+If you are using npm package import objects as
+
+```js
+import { ObjectAnimator, View } from 'aijas'
+```
+
 
 #### Step 2: Set animating element data-style-id
 
@@ -48,11 +54,6 @@ var anim = ObjectAnimator.ofInt(document.getElementById("anim-object"),
 this code will animate our image which has an id anim-object by translating it in x-axis from 100 to 400px from its current location. First an object animator is created by calling ObjectAnimator.ofInt where we pass our target element as parameter.
 Then we set the duration of animation and finally we start our animation. 
 
-If you are using npm package dont forget to import objects
-
-```
-import { ObjectAnimator, View } from 'aijas'
-```
 
 
 ## Diffrent type of animation supported
