@@ -4,6 +4,8 @@ Animation in JAVASCRIPT Android Style
 Easily create javscript animation from very few line of code.
 Experience animation coding as you do animation in android.
 
+![Alt text](images/ezgif.com-video-to-gif.gif?raw=true "Title")
+
 ## How it works
 
 Well the main logic is the library creates a set of css styles for animations and inseters into the style of div having id AIJAS_style. These style finally make the element animate. All the animation are possible by creating the keyframe based on the animation type you want to achieve. 
